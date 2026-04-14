@@ -22,6 +22,7 @@
 | v2.1.92 | Windows | 已验证 |
 | v2.1.96 | macOS/Linux | 已验证 |
 | v2.1.104 | Windows | 已验证 |
+| v2.1.105 | Windows | 已验证 |
 
 **版本匹配策略**：精确匹配，不支持回退。每个版本的混淆变量名不同，补丁无法跨版本复用。不支持的版本会直接报错。
 
@@ -65,6 +66,79 @@ claude --permission-mode auto    # 启动时启用
 # 或在会话中按 Shift+Tab 切换
 ```
 
+### 别名配置（推荐）
+
+补丁后每次启动都需要加 `--permission-mode auto` 参数。可以通过别名简化操作：
+
+#### Windows（npm 全局安装）
+
+在 PowerShell 中创建持久别名：
+
+```powershell
+# 添加到 $PROFILE 文件，每次启动 PowerShell 自动生效
+Add-Content $PROFILE 'function claude-auto { claude --permission-mode auto @args }'
+# 重新加载配置
+. $PROFILE
+
+# 使用
+claude-auto          # 等同于 claude --permission-mode auto
+claude-auto chat     # 等同于 claude --permission-mode auto chat
+```
+
+或者使用 CMD 的 `doskey`（仅当前会话有效）：
+
+```cmd
+doskey claude-auto=claude --permission-mode auto $*
+```
+
+#### Windows（Volta 管理安装）
+
+Volta 安装的 `claude` 命令路径不同，需要确保 shim 正常工作：
+
+```powershell
+# 确认 volta 能找到 claude
+volta which claude
+
+# 同样添加 PowerShell 函数到 $PROFILE
+Add-Content $PROFILE 'function claude-auto { claude --permission-mode auto @args }'
+. $PROFILE
+
+# 使用
+claude-auto
+```
+
+> 如果 Volta shim 丢失，重新链接：`volta pin claude` 或 `npm install -g @anthropic-ai/claude-code`
+
+#### Linux / macOS（Bash）
+
+```bash
+# 添加到 ~/.bashrc 或 ~/.zshrc
+echo 'alias claude-auto="claude --permission-mode auto"' >> ~/.bashrc
+source ~/.bashrc
+
+# 使用
+claude-auto
+claude-auto --model claude-sonnet-4-6-20250514
+```
+
+#### 跨平台通用（npm script）
+
+在项目 `package.json` 中添加：
+
+```json
+{
+  "scripts": {
+    "claude": "claude --permission-mode auto"
+  }
+}
+```
+
+```bash
+npm run claude
+# 带参数
+npm run claude -- chat
+```
+
 ### 原理
 
 Claude Code 使用 [Bun](https://bun.sh/) 编译为独立二进制文件（Windows 为 npm 安装的 `cli.js`），JavaScript 源码以明文嵌入。本脚本通过**等长字节替换**修改 6 个权限检查函数：
@@ -89,7 +163,11 @@ function ty(){if(cv?.isAutoModeCircuitBroken()??!1)return!1;...}
 function oN(){if(C0?.isAutoModeCircuitBroken()??!1)return!1;...}
 // v2.1.104
 function qL(){if(IV?.isAutoModeCircuitBroken()??!1)return!1;...}
+// v2.1.105
+function DL(){if(Lf?.isAutoModeCircuitBroken()??!1)return!1;...}
 ```
+
+> **注意**：v2.1.105 的 `circuit-broken` 补丁结构有变化，从 `return <variable>` 改为 `return <object>.circuitBroken`，补丁已适配。
 
 ---
 
