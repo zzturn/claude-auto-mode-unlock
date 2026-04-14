@@ -118,6 +118,44 @@ const VERSION_PATCHES = {
       replace: '$=!0;if(z!=="disabled"&&!Y&&w)$=z==="enabled"||ql8()',
     },
   ],
+  '2.1.105': [
+    {
+      id: 'provider-check',
+      desc: 'modelSupportsAutoMode — bypass provider check',
+      search:  'if(Y!=="firstParty"&&Y!=="anthropicAws")return!1',
+      replace: 'if(Y!=="firstParty"&&Y!=="anthropicAws")return!0',
+    },
+    {
+      id: 'model-regex',
+      desc: 'modelSupportsAutoMode — bypass model regex check',
+      search:  '/^claude-(opus|sonnet)-4-6/.test(K)}return!1}',
+      replace: '/^claude-(opus|sonnet)-4-6/.test(K)}return!0}',
+    },
+    {
+      id: 'gate-enabled',
+      desc: 'isAutoModeGateEnabled — always return true',
+      search:  'function DL(){if(Lf?.isAutoModeCircuitBroken()??!1)return!1;if(fY7())return!1;if(!Nk6(M5()))return!1;return!0}',
+      replace: 'function DL(){if(Lf?.isAutoModeCircuitBroken()??!1)return!0;if(fY7())return!0;if(!Nk6(M5()))return!0;return!0}',
+    },
+    {
+      id: 'circuit-broken',
+      desc: 'isAutoModeCircuitBroken — always return false',
+      search:  'function xHY(){return IM6.circuitBroken}',
+      replace: 'function xHY(){return !1               }',
+    },
+    {
+      id: 'can-enter',
+      desc: 'verifyAutoModeGateAccess — force canEnterAuto happy path',
+      search:  'if(j)return{updateContext:(G)=>J(G,$)};let X;',
+      replace: 'if(1)return{updateContext:(G)=>J(G,$)};let X;',
+    },
+    {
+      id: 'carousel',
+      desc: 'carouselAvailable — always true (enables Shift+Tab cycling)',
+      search:  '$=!1;if(z!=="disabled"&&!Y&&w)$=z==="enabled"||Zn8()',
+      replace: '$=!0;if(z!=="disabled"&&!Y&&w)$=z==="enabled"||Zn8()',
+    },
+  ],
   '2.1.96': [
     {
       id: 'provider-check',
