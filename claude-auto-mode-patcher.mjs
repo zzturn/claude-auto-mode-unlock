@@ -206,6 +206,50 @@ const VERSION_PATCHES = {
       replace: '$=!0;if(z!=="disabled"&&!Y&&w)$=z==="enabled"||fl8()',
     },
   ],
+  '2.1.137': [
+    {
+      id: 'provider-check',
+      desc: 'modelSupportsAutoMode — bypass provider check',
+      search:  'if(O!=="firstParty"&&O!=="anthropicAws")return!1',
+      replace: 'if(O!=="firstParty"&&O!=="anthropicAws")return!0',
+    },
+    {
+      id: 'model-regex',
+      desc: 'modelSupportsAutoMode — bypass model regex check (outer return)',
+      search:  '/^claude-(opus|sonnet)-4-6/.test(_)||/^claude-opus-4-7/.test(_)}return!1}',
+      replace: '/^claude-(opus|sonnet)-4-6/.test(_)||/^claude-opus-4-7/.test(_)}return!0}',
+    },
+    {
+      id: 'model-return',
+      desc: 'modelSupportsAutoMode — regex return always true',
+      search:  'return/^claude-(opus|sonnet)-4-6/.test(_)||/^claude-opus-4-7/.test(_)',
+      replace: 'return!0                                                             ',
+    },
+    {
+      id: 'gate-enabled',
+      desc: 'isAutoModeGateEnabled — always return true',
+      search:  'function fE(){if(ok?.isAutoModeCircuitBroken()??!1)return!1;if(dv8())return!1;if(!NxH(IK()))return!1;return!0}',
+      replace: 'function fE(){if(ok?.isAutoModeCircuitBroken()??!1)return!0;if(dv8())return!0;if(!NxH(IK()))return!0;return!0}',
+    },
+    {
+      id: 'circuit-broken',
+      desc: 'isAutoModeCircuitBroken — always return false',
+      search:  'function nd5(){return HkH.circuitBroken}',
+      replace: 'function nd5(){return !1               }',
+    },
+    {
+      id: 'can-enter',
+      desc: 'verifyAutoModeGateAccess — force canEnterAuto happy path',
+      search:  'if(Y)return{updateContext:(G)=>J(G,$)};let j;',
+      replace: 'if(1)return{updateContext:(G)=>J(G,$)};let j;',
+    },
+    {
+      id: 'carousel',
+      desc: 'carouselAvailable — always true (enables Shift+Tab cycling)',
+      search:  '$=!1;if(K!=="disabled"&&!O&&z)$=K==="enabled"||BnH()',
+      replace: '$=!0;if(K!=="disabled"&&!O&&z)$=K==="enabled"||BnH()',
+    },
+  ],
   '2.1.96': [
     {
       id: 'provider-check',
