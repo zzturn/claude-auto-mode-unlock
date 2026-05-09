@@ -23,6 +23,7 @@
  *   4. isAutoModeCircuitBroken: Always return false
  *   5. verifyAutoModeGateAccess: Force canEnterAuto happy path
  *   6. carouselAvailable: Always true (enables Shift+Tab cycling)
+ *   7. classifierUnavailable: Fail-open when classifier service is down (allow instead of block)
  */
 
 import {
@@ -248,6 +249,12 @@ const VERSION_PATCHES = {
       desc: 'carouselAvailable — always true (enables Shift+Tab cycling)',
       search:  '$=!1;if(K!=="disabled"&&!O&&z)$=K==="enabled"||BnH()',
       replace: '$=!0;if(K!=="disabled"&&!O&&z)$=K==="enabled"||BnH()',
+    },
+    {
+      id: 'classifier-unavailable',
+      desc: 'classifier unavailable — fail-open instead of fail-closed (allow when classifier service is down)',
+      search:  'gR("tengu_iron_gate_closed",!0,fW8)',
+      replace: 'gR("tengu_iron_gate_closed",!1,fW8)',
     },
   ],
   '2.1.96': [
